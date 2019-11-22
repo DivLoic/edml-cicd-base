@@ -1,0 +1,44 @@
+plugins {
+    id 'scala'
+    id 'application'
+    id 'com.palantir.docker' version '0.22.1'
+}
+
+group 'fr.xebia.gbildi'
+version '0.1.0'
+
+sourceCompatibility = 1.8
+
+mainClassName = 'fr.xebia.gbildi.cicd.ModelPublisher'
+
+repositories {
+    mavenCentral()
+    maven { url = 'http://packages.confluent.io/maven/' }
+}
+
+compileScala {
+    scalaCompileOptions.additionalParameters = [
+            '-language:postfixOps',
+            '-Xmacro-settings:materialize-derivations'
+    ]
+}
+
+docker {
+    tags version
+    files tasks.distTar.outputs //'docker/'
+    dockerfile file('Dockerfile')
+    name 'gcr.io/event-driven-ml/edml-cicd-base'
+}
+
+dependencies {
+
+    compile files('./lib/edml-schema.jar')
+    compile 'org.scala-lang:scala-library:2.12.9'
+    compile group: 'org.zeroturnaround', name: 'zt-zip', version: '1.13'
+    compile group: 'org.apache.avro', name: 'avro', version: '1.9.1'
+    compile group: 'org.tensorflow', name: 'tensorflow', version: '1.13.1'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile group: 'io.confluent', name: 'kafka-avro-serializer', version: '5.3.1'
+    compile group: 'io.confluent', name: 'kafka-streams-avro-serde', version: '5.3.1'
+    compile group: 'com.github.pureconfig', name: 'pureconfig_2.12', version: '0.12.1'
+}
