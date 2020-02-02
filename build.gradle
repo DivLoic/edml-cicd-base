@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'fr.xebia.gbildi'
-version '0.1.0'
+version '0.1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
@@ -25,20 +25,34 @@ compileScala {
 
 docker {
     tags version
-    files tasks.distTar.outputs //'docker/'
+    files tasks.distTar.outputs
     dockerfile file('Dockerfile')
     name 'gcr.io/event-driven-ml/edml-cicd-base'
 }
 
 dependencies {
 
-    compile files('./lib/edml-schema.jar')
-    compile 'org.scala-lang:scala-library:2.12.9'
-    compile group: 'org.zeroturnaround', name: 'zt-zip', version: '1.13'
-    compile group: 'org.apache.avro', name: 'avro', version: '1.9.1'
-    compile group: 'org.tensorflow', name: 'tensorflow', version: '1.13.1'
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-    compile group: 'io.confluent', name: 'kafka-avro-serializer', version: '5.3.1'
-    compile group: 'io.confluent', name: 'kafka-streams-avro-serde', version: '5.3.1'
-    compile group: 'com.github.pureconfig', name: 'pureconfig_2.12', version: '0.12.1'
+    implementation files('./lib/edml-schema.jar')
+    implementation 'org.scala-lang:scala-library:2.12.9'
+    compile group: 'org.typelevel', name: 'cats-core_2.12', version: '2.1.0'
+    implementation group: 'org.zeroturnaround', name: 'zt-zip', version: '1.13'
+    implementation group: 'org.apache.avro', name: 'avro', version: '1.9.1'
+    implementation group: 'org.tensorflow', name: 'tensorflow', version: '1.13.1'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation group: 'io.confluent', name: 'kafka-avro-serializer', version: '5.3.1'
+    implementation group: 'io.confluent', name: 'kafka-streams-avro-serde', version: '5.3.1'
+    implementation group: 'com.github.pureconfig', name: 'pureconfig_2.12', version: '0.12.1'
+
+    testImplementation group: 'org.scalatest', name: 'scalatest_2.12', version: '3.1.0'
+    testImplementation group: 'org.scalactic', name: 'scalactic_2.12', version: '3.1.0'
 }
+
+task spec(dependsOn: ['compileTestScala'], type: JavaExec) {
+    group = 'verification'
+    description = 'Runs the scala tests.'
+    main = 'org.scalatest.tools.Runner'
+    args = ['-R', 'build/classes/scala/test', '-o']
+    classpath = sourceSets.test.runtimeClasspath
+}
+
+test.dependsOn spec
