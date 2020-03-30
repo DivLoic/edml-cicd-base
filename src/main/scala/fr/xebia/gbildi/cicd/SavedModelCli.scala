@@ -1,9 +1,10 @@
 package fr.xebia.gbildi.cicd
 
 import cats.implicits._
-import fr.xebia.gbildi.{TFInOperation, TFOutOperation}
+import fr.xebia.gbildi.{TFInOperation, TFOutOperation, TFSavedModel}
 
 import scala.sys.process._
+import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -11,19 +12,23 @@ import scala.util.{Failure, Success, Try}
  */
 object SavedModelCli {
 
+  val outputBlockRegex: Regex = "^\\s*outputs\\['(.*)'\\] tensor_info:$".r
+  val inputBlockRegex: Regex = "^\\s*inputs\\['(.*)'\\] tensor_info:$".r
+
   def execute(modelPath: String): Try[String] =
 
     Try(s"saved_model_cli show --dir $modelPath --all" !!)
 
-  def parseExecution(output: String): Unit = {
-
-  }
+  def parseExecution(execOutput: String): Try[TFSavedModel] = for {
+    output <- parseOutput(execOutput)
+    inputs <- parseInputs(execOutput)
+  } yield TFSavedModel(Array.emptyByteArray, "", inputs, output)
 
   def parseOutput(execOutput: String): Try[TFOutOperation] = {
     val it = execOutput.linesIterator
 
     for(line <- it) {
-      if ("^\\s*outputs\\['(.*)'\\] tensor_info:$".r.pattern.matcher(line).matches()) {
+      if (outputBlockRegex.pattern.matcher(line).matches()) {
         val dtype = it.next()
         val shape = it.next()
         val name = it.next()
@@ -44,12 +49,11 @@ object SavedModelCli {
   }
 
   def parseInputs(execOutput: String): Try[List[TFInOperation]] = {
-
     val it = execOutput.linesIterator
 
     it.foldLeft(List.empty[Try[TFInOperation]])( (acc, line) => {
 
-      if ("^\\s*inputs\\['(.*)'\\] tensor_info:$".r.pattern.matcher(line).matches()) {
+      if (inputBlockRegex.pattern.matcher(line).matches()) {
         val dtype = it.next()
         val shape = it.next()
         val name = it.next()

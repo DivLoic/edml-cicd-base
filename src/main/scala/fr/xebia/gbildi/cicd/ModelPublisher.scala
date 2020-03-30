@@ -3,7 +3,7 @@ package fr.xebia.gbildi.cicd
 import java.io.{ByteArrayOutputStream, File}
 import java.util.Properties
 
-import fr.xebia.gbildi.{ModelKey, TFInOperation, TFOutOperation, TFSavedModel}
+import fr.xebia.gbildi.{ModelKey, TFSavedModel}
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer
 import org.apache.kafka.clients.producer.{Callback, KafkaProducer, ProducerRecord, RecordMetadata}
 import org.slf4j.LoggerFactory
@@ -13,6 +13,7 @@ import pureconfig.ConfigSource
 import pureconfig.generic.auto._
 
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 /**
  * Created by loicmdivad.
@@ -49,19 +50,17 @@ object ModelPublisher extends App {
     val buffer = new ByteArrayOutputStream()
     ZipUtil.pack(modelBundleDir, buffer)
 
-    logger info s"Key / Value creation with mdoel version ${publisherConfig.modelVersion}"
+    logger info s"Parsing model description (> saved_model_cli show --dir ${modelBundleDir.getAbsolutePath} --all)"
+    val modelDescription: Try[String] = SavedModelCli.execute(modelBundleDir.getAbsolutePath)
+    val modelParsed: Try[TFSavedModel] = modelDescription.flatMap(SavedModelCli.parseExecution)
+    modelDescription.map(_.lines.foreach(logger.info))
+
+    logger info s"Key / Value creation with model version ${publisherConfig.modelVersion}"
+
     val key = ModelKey(publisherConfig.modelName)
-    val value = TFSavedModel(
-      ziped_model = buffer.toByteArray,
-      version = publisherConfig.modelVersion,
-      output = TFOutOperation("Y", ""),
-      inputs = Seq(
-        TFInOperation("A", ""),
-        TFInOperation("B", ""),
-        TFInOperation("C", ""),
-        TFInOperation("D", ""),
-      )
-    )
+    val value = modelParsed
+      .map(_.copy(ziped_model = buffer.toByteArray, version = publisherConfig.modelVersion))
+      .get
 
     val record = new ProducerRecord(publisherConfig.modelTopic, key, value)
 

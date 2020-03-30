@@ -18,5 +18,5 @@ RUN ln -s pip3 /usr/bin/pip
 RUN pip3 install --no-cache --upgrade pip
 RUN pip3 install --no-cache --upgrade setuptools wheel tensorflow==1.15
 
-COPY edml-model-producer-0.1.0.tar /tmp/
-RUN tar -C / -xf /tmp/edml-model-producer-0.1.0.tar && mv /edml-model-producer-0.1.0 /app
+COPY edml-cicd-base-0.1.1.tar /tmp/
+RUN tar -C / -xf /tmp/edml-cicd-base-0.1.1.tar && mv /edml-cicd-base-0.1.1 /app
