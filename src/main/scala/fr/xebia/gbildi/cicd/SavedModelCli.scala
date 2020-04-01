@@ -1,77 +1,26 @@
 package fr.xebia.gbildi.cicd
 
-import cats.implicits._
+import com.spotify.zoltar.tf.TensorFlowModel
 import fr.xebia.gbildi.{TFInOperation, TFOutOperation, TFSavedModel}
 
-import scala.sys.process._
-import scala.util.matching.Regex
-import scala.util.{Failure, Success, Try}
+import scala.collection.JavaConverters._
 
 /**
  * Created by loicmdivad.
  */
 object SavedModelCli {
 
-  val outputBlockRegex: Regex = "^\\s*outputs\\['(.*)'\\] tensor_info:$".r
-  val inputBlockRegex: Regex = "^\\s*inputs\\['(.*)'\\] tensor_info:$".r
+  def extractGraph(model: TensorFlowModel, path: String): TFSavedModel = {
+    val signature = model.signatureDefinition()
 
-  def execute(modelPath: String): Try[String] =
-
-    Try(s"saved_model_cli show --dir $modelPath --all" !!)
-
-  def parseExecution(execOutput: String): Try[TFSavedModel] = for {
-    output <- parseOutput(execOutput)
-    inputs <- parseInputs(execOutput)
-  } yield TFSavedModel(Array.emptyByteArray, "", inputs, output)
-
-  def parseOutput(execOutput: String): Try[TFOutOperation] = {
-    val it = execOutput.linesIterator
-
-    for(line <- it) {
-      if (outputBlockRegex.pattern.matcher(line).matches()) {
-        val dtype = it.next()
-        val shape = it.next()
-        val name = it.next()
-
-        val output: Try[TFOutOperation] = for {
-
-          inType <- Try("dtype: (\\w*)".r.findAllIn(dtype).group(1))
-          inName <- Try("name: (\\w*)".r.findAllIn(name).group(1))
-
-        } yield TFOutOperation(inName, inType)
-
-        return output
-
-      }
+    val inputInfo: Seq[TFInOperation] = signature.getInputsMap.asScala.toSeq.map { case (key, info) =>
+      TFInOperation(key, info.getDtype.toString)
     }
 
-    Failure(new Exception("No output bloc was found"))
+    val outputInfo: TFOutOperation = signature.getOutputsMap.asScala.toSeq.map { case (key, info) =>
+      TFOutOperation(key, info.getDtype.toString)
+    }.head
+
+    TFSavedModel(model.id().value(), path, inputInfo, outputInfo)
   }
-
-  def parseInputs(execOutput: String): Try[List[TFInOperation]] = {
-    val it = execOutput.linesIterator
-
-    it.foldLeft(List.empty[Try[TFInOperation]])( (acc, line) => {
-
-      if (inputBlockRegex.pattern.matcher(line).matches()) {
-        val dtype = it.next()
-        val shape = it.next()
-        val name = it.next()
-
-        val input: Try[TFInOperation] = for {
-
-          inType <- Try("dtype: (\\w*)".r.findAllIn(dtype).group(1))
-          inName <- Try("name: (\\w*)".r.findAllIn(name).group(1))
-
-        } yield TFInOperation(inName, inType)
-
-        acc :+ input
-
-      }  else acc
-
-    })
-      .sequence
-      .flatMap(inputs => if(inputs.isEmpty) Failure(new Exception("No input bloc was found")) else Success(inputs))
-  }
-
 }
