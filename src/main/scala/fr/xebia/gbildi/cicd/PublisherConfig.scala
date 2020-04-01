@@ -1,23 +1,22 @@
 package fr.xebia.gbildi.cicd
 
-import java.util
 
 import com.typesafe.config.Config
+import fr.xebia.gbildi.cicd.PublisherConfig.TensorflowConfig
+import fr.xebia.gbildi.cicd.PublisherConfig.TensorflowConfig.Model
 
-import scala.collection.JavaConverters._
+import scala.concurrent.duration.FiniteDuration
 
 /**
  * Created by loicmdivad.
  */
-case class PublisherConfig(modelTopic: String,
-                           modelName: String,
-                           modelVersion: String,
-                           kafkaClient: Config,
-                           tensorflowConfig: Config)
+case class PublisherConfig(modelTopic: String, kafkaClient: Config, tensorflowClient: TensorflowConfig)
 
 object PublisherConfig {
 
-  def configToMap(c: Config): util.Map[String, AnyRef] = c.entrySet().asScala
-    .map(pair => (pair.getKey, c.getAnyRef(pair.getKey)))
-    .toMap.asJava
+  case class TensorflowConfig(model: Model, tags: List[String], loadingTimeout: FiniteDuration)
+
+  object TensorflowConfig {
+    case class Model(name: String, version: String, path: String)
+  }
 }
