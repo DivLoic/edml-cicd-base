@@ -3,7 +3,7 @@ FROM openjdk:8-jdk
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y && apt-get install -y python3.5 python3-dev python3-pip curl
-RUN apt-get update -y && apt-get install -y apt-utils dialog software-properties-common lsb
+RUN apt-get update -y && apt-get install -y apt-utils dialog software-properties-common
 
 RUN echo "deb http://packages.cloud.google.com/apt cloud-sdk-$(lsb_release -c -s) main" \
   | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list

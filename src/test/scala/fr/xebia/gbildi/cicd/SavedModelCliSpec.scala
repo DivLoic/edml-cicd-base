@@ -15,7 +15,7 @@ import scala.collection.JavaConverters._
  */
 class SavedModelCliSpec extends AnyFlatSpec with Matchers with GivenWhenThen {
 
-  val modelPath: String = Thread.currentThread().getContextClassLoader.getResource("../resources/model_v0").getPath
+  val modelPath: String = Thread.currentThread().getContextClassLoader.getResource("model_v0").getPath
 
   val modelOptions: TensorFlowModel.Options = TensorFlowModel.Options.builder().tags("serve" :: Nil asJava).build()
 
@@ -23,7 +23,7 @@ class SavedModelCliSpec extends AnyFlatSpec with Matchers with GivenWhenThen {
 
     Given("a model serialized in protobuf")
     val loader = TensorFlowLoader.create(Model.Id.create("model_v0"), modelPath, modelOptions, "predict")
-    val model = loader.get(Duration.ofSeconds(5))
+    val model = loader.get(Duration.ofSeconds(20))
 
     When("the model is parsed by the function extractGraph")
     val result = SavedModelCli.extractGraph(model, "./arbitrary/model/path/")
