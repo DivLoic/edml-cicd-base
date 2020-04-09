@@ -1,4 +1,5 @@
 FROM openjdk:8-jdk
+MAINTAINER Loïc DIVAD <ldivad@xebia.fr>
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -18,5 +19,10 @@ RUN ln -s pip3 /usr/bin/pip
 RUN pip3 install --no-cache --upgrade pip
 RUN pip3 install --no-cache --upgrade setuptools wheel tensorflow==1.15
 
-COPY edml-cicd-base-0.1.1.tar /tmp/
-RUN tar -C / -xf /tmp/edml-cicd-base-0.1.1.tar && mv /edml-cicd-base-0.1.1 /app
+RUN echo '#!/bin/bash\njava -jar /usr/share/edml/cicd-base.jar "$@"' > /usr/bin/edml && chmod +x /usr/bin/edml
+
+ARG JAR_FILE
+ARG CLASSPATH
+
+ADD target/${CLASSPATH} /usr/lib/edml/
+ADD target/${JAR_FILE} /usr/share/edml/cicd-base.jar
