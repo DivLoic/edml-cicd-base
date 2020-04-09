@@ -9,6 +9,11 @@
 
     <profiles>
         <profile>
+            <properties>
+                <maven.username>${MAVEN_USERNAME}</maven.username>
+                <docker.username>${DOCKER_USERNAME}</docker.username>
+                <docker.password>${DOCKER_PASSWORD}</docker.password>
+            </properties>
             <id>github</id>
             <repositories>
                 <repository>
@@ -19,8 +24,10 @@
                 </repository>
                 <repository>
                     <id>github</id>
-                    <name>GitHub OWNER Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/OWNER/REPOSITORY</url>
+                    <name>GitHub ${maven.username} Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/${maven.username}/edml-schema</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
                 </repository>
             </repositories>
         </profile>
@@ -29,8 +36,8 @@
     <servers>
         <server>
             <id>github</id>
-            <username>USERNAME</username>
-            <password>TOKEN</password>
+            <username>${MAVEN_USERNAME}</username>
+            <password>${MAVEN_PASSWORD}</password>
         </server>
     </servers>
 </settings>
