@@ -15,5 +15,4 @@
     <root level="${ROOT_LOG_LVL:-INFO}">
         <appender-ref ref="STDOUT" />
     </root>
-
 </configuration>

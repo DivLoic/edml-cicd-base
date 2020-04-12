@@ -17,6 +17,9 @@ object PublisherConfig {
   case class TensorflowConfig(model: Model, tags: List[String], loadingTimeout: FiniteDuration)
 
   object TensorflowConfig {
+
     case class Model(name: String, version: String, path: String)
+
   }
+
 }

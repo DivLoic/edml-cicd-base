@@ -160,18 +160,35 @@
                             <goal>build</goal>
                             <goal>push</goal>
                         </goals>
+                        <configuration>
+                            <username>${docker.username}</username>
+                            <password>${docker.password}</password>
+                            <repository>${docker.username}/edml-cicd-base</repository>
+                            <tag>${project.version}</tag>
+                            <buildArgs>
+                                <CLASSPATH>classpath/classpath/jars</CLASSPATH>
+                                <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                            </buildArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>latest</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                        <configuration>
+                            <username>${docker.username}</username>
+                            <password>${docker.password}</password>
+                            <repository>${docker.username}/edml-cicd-base</repository>
+                            <tag>latest</tag>
+                            <buildArgs>
+                                <CLASSPATH>classpath/classpath/jars</CLASSPATH>
+                                <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                            </buildArgs>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <username>${docker.username}</username>
-                    <password>${docker.password}</password>
-                    <repository>${docker.username}/edml-cicd-base</repository>
-                    <tag>${project.version}</tag>
-                    <buildArgs>
-                        <CLASSPATH>classpath/classpath/jars</CLASSPATH>
-                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-                    </buildArgs>
-                </configuration>
             </plugin>
         </plugins>
     </build>

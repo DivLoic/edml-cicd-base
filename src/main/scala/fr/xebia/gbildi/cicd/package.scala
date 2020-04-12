@@ -13,17 +13,17 @@ package object cicd {
 
   implicit class configOps(config: Config) {
 
-    def toMap: Map[String, AnyRef] = config
-      .entrySet()
-      .asScala
-      .map(pair => (pair.getKey, config.getAnyRef(pair.getKey)))
-      .toMap
-
     def toProps: Properties = {
       val properties = new Properties()
       properties.putAll(config.toMap.asJava)
       properties
     }
+
+    def toMap: Map[String, AnyRef] = config
+      .entrySet()
+      .asScala
+      .map(pair => (pair.getKey, config.getAnyRef(pair.getKey)))
+      .toMap
   }
 
   implicit class propertiesOps(map: Map[String, AnyRef]) {
