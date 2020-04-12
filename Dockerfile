@@ -3,7 +3,7 @@ MAINTAINER Loïc DIVAD <ldivad@xebia.fr>
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update -y && apt-get install -y python3.5 python3-dev python3-pip curl
+RUN apt-get update -y && apt-get install -y python3.5 python3-dev python3-pip curl gettext-base
 RUN apt-get update -y && apt-get install -y apt-utils dialog software-properties-common
 
 RUN echo "deb http://packages.cloud.google.com/apt cloud-sdk-$(lsb_release -c -s) main" \
@@ -17,9 +17,10 @@ RUN ln -sf python3 /usr/bin/python
 RUN ln -s pip3 /usr/bin/pip
 
 RUN pip3 install --no-cache --upgrade pip
-RUN pip3 install --no-cache --upgrade setuptools wheel tensorflow==1.15
+RUN pip3 install --no-cache --upgrade setuptools wheel
 
-RUN echo '#!/bin/bash\njava -jar /usr/share/edml/cicd-base.jar "$@"' > /usr/bin/edml && chmod +x /usr/bin/edml
+ADD bin/edml.sh /usr/bin/edml
+ADD bin/maven-eval.sh /usr/bin/maven-eval
 
 ARG JAR_FILE
 ARG CLASSPATH
