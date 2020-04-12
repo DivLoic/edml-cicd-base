@@ -31,4 +31,4 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Docker image creation
-        run: ./mvnw assembly:single package dockerfile:push -s settings.xml
+        run: ./mvnw assembly:single package dockerfile:push@default dockerfile:push@latest -s settings.xml
