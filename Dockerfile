@@ -21,6 +21,8 @@ RUN pip3 install --no-cache --upgrade virtualenv setuptools wheel
 
 ADD bin/edml.sh /usr/bin/edml
 ADD bin/maven-eval.sh /usr/bin/maven-eval
+ADD bin/export-model-path.sh /usr/bin/export-model-path
+ADD bin/export-model-version.sh /usr/bin/export-model-version
 
 ARG JAR_FILE
 ARG CLASSPATH
