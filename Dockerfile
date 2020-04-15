@@ -17,7 +17,7 @@ RUN ln -sf python3 /usr/bin/python
 RUN ln -s pip3 /usr/bin/pip
 
 RUN pip3 install --no-cache --upgrade pip
-RUN pip3 install --no-cache --upgrade virtualenv setuptools wheel
+RUN pip3 install --no-cache --upgrade setuptools wheel virtualenv
 
 ADD bin/edml.sh /usr/bin/edml
 ADD bin/maven-eval.sh /usr/bin/maven-eval
