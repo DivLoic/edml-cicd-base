@@ -1,5 +1,5 @@
 # EDML CI/CD Base
-###### Gitlab runner image the [event driven ml](https://blog.loicmdivad.com/talks/event-driven-machine-learning-xebicon19/) experiment
+###### Gitlab runner image from the [event driven ml](https://blog.loicmdivad.com/talks/event-driven-machine-learning-xebicon19/) experiment
 ![EDML CI/CD Runner Workflow Generation](https://github.com/DivLoic/edml-cicd-base/workflows/EDML%20CI/CD%20Runner%20Workflow%20Generation/badge.svg)
 ![EDML CI/CD Base Docker Image](https://img.shields.io/docker/v/loicmdivad/edml-cicd-base?style=plastic)
 
