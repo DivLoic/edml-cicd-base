@@ -1,7 +1,7 @@
 # EDML CI/CD Base
 ###### Gitlab runner image the [event driven ml](https://blog.loicmdivad.com/talks/event-driven-machine-learning-xebicon19/) experiment
 ![EDML CI/CD Runner Workflow Generation](https://github.com/DivLoic/edml-cicd-base/workflows/EDML%20CI/CD%20Runner%20Workflow%20Generation/badge.svg)
-
+![EDML CI/CD Base Docker Image](https://img.shields.io/docker/v/loicmdivad/edml-cicd-base?style=plastic)
 
 ## About EDML
 [Event-Driven Machine Learning](https://github.com/DivLoic/event-driven-ml) is an experiment ran by 
@@ -12,6 +12,12 @@ to deploying streaming application in the cloud with [Confluent Cloud](https://w
 the EDML project discuss the important points leading to model serving automation.
 
 ## Why?
+The EMDL runners serve multiple purposes, such as: packaging maven projects, creating python artifacts or submitting 
+model trainings on Google Cloud AI Platform. To create a single image with all the necessary dependencies (e.g. maven,
+python, gcloud SDK) this module use Github Actions and push the result to 
+[docker hub](https://hub.docker.com/repository/docker/loicmdivad/edml-cicd-base).
+In addition, the image contains a few scripts carrying the CI logic of project. It helps write the Gitlab CI stages
+for each module from [event-driven-ml](https://github.com/DivLoic/event-driven-ml).  
 
 ## How?
 
